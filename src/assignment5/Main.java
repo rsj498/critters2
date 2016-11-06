@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -133,14 +134,6 @@ public class Main extends Application {
 		// Look through all .class files and grab all that are subclasses of critter
 		ArrayList<String> validCritterTypes = getAllCritterSubclasses();
 
-		// Set the pull down menu for the types of critters one can add to the world
-//		ChoiceBox<String> choiceBox_runStats = new ChoiceBox<String>();
-//		choiceBox_runStats.setItems(FXCollections.observableList(validCritterTypes));
-//		choiceBox_runStats.setTooltip(new Tooltip(
-//				"Type of critters to view stats on.\n"
-//				+ "You can select more than one option"));
-//		userGrid.add(choiceBox_runStats, 2, 2);
-
 		// Set the list menu for types of critters one can run stats on
 		ListView<String> list_runStats = new ListView<String>();
 		list_runStats.setItems(FXCollections.observableList(validCritterTypes));
@@ -161,7 +154,7 @@ public class Main extends Application {
 				public void changed(ObservableValue<? extends Number> observable,
 									Number oldValue, Number newValue) {
 					// TODO: figure out what to do with
-					//System.out.println(list_runStats.getSelectionModel().getSelectedItems());
+					// System.out.println(list_runStats.getSelectionModel().getSelectedItems());
 					// TODO: probably call that ^ when someone clicks the runStats button
 				}
 			}
@@ -185,6 +178,7 @@ public class Main extends Application {
 		buttonsGrid.setHgap(10);
 		buttonsGrid.setVgap(10);
 		buttonsGrid.add(buttons, 0, 0);
+		buttonsGrid.setStyle("-fx-background-color: #FFFFFF;");
 	}
 
 	private static void setCritterGrid() {
@@ -192,6 +186,7 @@ public class Main extends Application {
 		critterGrid.setHgap(10);
 		critterGrid.setVgap(10);
 		critterGrid.setPadding(new Insets(25, 25, 25, 25));
+		critterGrid.setStyle("-fx-background-color: #FFFFFF;");
 	}
 
 	private static void setUserGrid() {
@@ -199,11 +194,12 @@ public class Main extends Application {
 		userGrid.setHgap(10);
 		userGrid.setVgap(10);
 		userGrid.setPadding(new Insets(25, 10, 25, 25));
+		userGrid.setStyle("-fx-background-color: #FFFFFF;");
 	}
 
 	private static void setCritterStage() {
 		critterStage.setTitle("Critter World");
-		critterStage.setX(760); // TODO: generalize this for every computer screen
+		critterStage.setX(710); // TODO: generalize this for every computer screen
 		critterStage.setY(0);// TODO: generalize this for every computer screen
 	}
 
@@ -238,8 +234,10 @@ public class Main extends Application {
 			hbox.getChildren().addAll(userGrid, buttonsGrid);
 			userScene = new Scene(hbox, screenWidth, screenHeight);
 
+			Critter c = new Craig();
+			c.paint(userGrid);
+
 			Critter.displayWorld();
-//			Painter.paint();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

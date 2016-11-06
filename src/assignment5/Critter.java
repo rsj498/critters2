@@ -4,16 +4,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import assignment5.Critter.CritterShape;
+import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+
 public abstract class Critter {
 	// ==========================================================================
 	// ============================== NEW STUFF =================================
-	public enum CritterShape {
-		CIRCLE,
-		SQUARE,
-		TRIANGLE,
-		DIAMOND,
-		STAR
-	}
 
 	/* the default color is white, which I hope makes critters invisible by default
 	 * If you change the background color of your View component, then update the default
@@ -26,18 +28,25 @@ public abstract class Critter {
 	 * shape, at least, that's the intent. You can edit these default methods however you
 	 * need to, but please preserve that intent as you implement them.
 	 */
-	public javafx.scene.paint.Color viewColor() {
-		return javafx.scene.paint.Color.WHITE;
+
+	public enum CritterShape {
+		CIRCLE,
+		SQUARE,
+		TRIANGLE,
+		DIAMOND,
+		STAR
 	}
 
-	public javafx.scene.paint.Color viewOutlineColor() { return viewColor(); }
-	public javafx.scene.paint.Color viewFillColor() { return viewColor(); }
+	public Color viewColor()        { return Color.WHITE; }
+	public Color viewOutlineColor() { return viewColor(); }
+	public Color viewFillColor()    { return viewColor(); }
 
 	public abstract CritterShape viewShape();
 
 	// ==========================================================================
 	// ==========================================================================
 
+	private static final int critterSize = 50;
 	private static String myPackage;
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
@@ -81,6 +90,23 @@ public abstract class Critter {
 		} else {
 			return oldCritterCount.get(resultingLoc);
 		}
+	}
+
+	protected final void paint(GridPane g) {
+		Shape s = new Polygon();
+		switch (viewShape()) {
+			case CIRCLE: s = new Circle(critterSize); break;
+			case DIAMOND: break;
+			case SQUARE: s = new Rectangle(critterSize, critterSize); break;
+			case STAR: break;
+			case TRIANGLE: break;
+			default: break;
+		}
+
+		s.setFill(viewFillColor());
+		s.setStroke(viewOutlineColor());
+//		g.add(s, x_coord, y_coord);
+		g.add(s, 4, 4);
 	}
 
 	// ==========================================================================
