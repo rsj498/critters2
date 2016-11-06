@@ -1,4 +1,5 @@
 // When we suck at git and our TA ali don't know shit
+// I hate everythign - " rebeccca"
 package assignment5;
 
 import java.io.File;
