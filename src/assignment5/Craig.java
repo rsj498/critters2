@@ -74,9 +74,12 @@ public class Craig extends Critter {
 	}
 
 	@Override
-	public CritterShape viewShape() { return CritterShape.SQUARE; }
+	public CritterShape viewShape() { return CritterShape.STAR; }
 
 	@Override
 	public Color viewOutlineColor() { return Color.BLUE; }
+
+	@Override
+	public Color viewFillColor() { return Color.BLUE; }
 
 }

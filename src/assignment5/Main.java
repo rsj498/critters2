@@ -7,10 +7,8 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -161,10 +159,15 @@ public class Main extends Application {
 		);
 
 		// Add the button for obtaining stats on specified critters
+		// Add an invisible buffer button so that the actual button is centered
 		Button button_runStats = new Button("Run Stats");
 		button_runStats.setMaxWidth(Double.MAX_VALUE);
-
-		buttons.getChildren().add(button_runStats);
+		Button button_buffer = new Button();
+		button_buffer.setVisible(false);
+		button_buffer.setMinHeight(13);
+		button_buffer.setMaxHeight(13);
+		buttons.getChildren().add(button_buffer);
+		buttons.getChildren().add(3, button_runStats);
 	}
 
 	// TODO: write this
@@ -209,6 +212,13 @@ public class Main extends Application {
 		userStage.setY(0);// TODO: generalize this for every computer screen
 	}
 
+	private static void placeUserScene() {
+		// put the buttons and user grid into a box
+		HBox hbox = new HBox();
+		hbox.getChildren().addAll(userGrid, buttonsGrid);
+		userScene = new Scene(hbox, screenWidth, screenHeight);
+	}
+
 	// TODO: idk how scaling grid sizes for different computers works
 	// TODO: looks promising http://www.java2s.com/Code/Java/JavaFX/Setstagexandyaccordingtoscreensize.htm
 
@@ -229,13 +239,10 @@ public class Main extends Application {
 			placeRunStatsOption();
 			placeQuitOption();
 			placeButtons();
-
-			HBox hbox = new HBox();
-			hbox.getChildren().addAll(userGrid, buttonsGrid);
-			userScene = new Scene(hbox, screenWidth, screenHeight);
+			placeUserScene();
 
 			Critter c = new Craig();
-			c.paint(userGrid);
+			c.paint(critterGrid);
 
 			Critter.displayWorld();
 		} catch(Exception e) {
