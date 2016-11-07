@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -43,7 +44,7 @@ public abstract class Critter {
 	// ==========================================================================
 	// ==========================================================================
 
-	private static final int critterSize = 20;
+	public static final int critterSize = 20;
 	private static String myPackage;
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
@@ -52,8 +53,8 @@ public abstract class Critter {
     private static boolean isFightingPhase = false;
     private boolean hasMoved = false;
     private int energy = 0;
-    private int x_coord;
-	private int y_coord;
+    public int x_coord; // TODO: change this back
+	public int y_coord;
 
 	public abstract void doTimeStep();
 	public abstract boolean fight(String oponent);
@@ -89,7 +90,7 @@ public abstract class Critter {
 		}
 	}
 
-	protected final void paint(GridPane g) {
+	protected final void paint(StackPane g) {
 		Shape s = new Polygon();
 		double[] circleCoordinates = new double[] {
 			(critterSize/2) * Math.cos(90),   (critterSize/2) * Math.sin(90),
@@ -205,7 +206,8 @@ public abstract class Critter {
 
 		s.setFill(viewFillColor());
 		s.setStroke(viewOutlineColor());
-		g.add(s, x_coord, y_coord);
+		//g.add(s, x_coord, y_coord); TODO: put that back
+		g.getChildren().add(s);
 	}
 
 	// ==========================================================================

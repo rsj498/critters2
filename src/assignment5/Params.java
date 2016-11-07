@@ -2,7 +2,7 @@ package assignment5;
 
 public class Params {
 	public static int world_width = 650;
-	public static int world_height = 700;
+	public static int world_height = 695;
 	public static int walk_energy_cost = 2;
 	public static int run_energy_cost = 5;
 	public static int rest_energy_cost = 0;

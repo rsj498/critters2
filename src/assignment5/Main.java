@@ -3,6 +3,8 @@ package assignment5;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.security.auth.x500.X500Principal;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -19,20 +21,24 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 	// screen width and height factors
 	private final static int screenWidthScalingFactor = 1;
 	private final static int screenHeightScalingFactor = 1;
-	private final static int screenWidth = Params.world_width * screenWidthScalingFactor;
-	private final static int screenHeight = Params.world_height * screenHeightScalingFactor;
+	public final static int screenWidth = Params.world_width * screenWidthScalingFactor;
+	public final static int screenHeight = Params.world_height * screenHeightScalingFactor;
 
 	// grid, stage, scene for the critters
-	static GridPane critterGrid = new GridPane();
+	static GridPane layer_critterWorld = new GridPane();
 	static Stage critterStage = new Stage();
-	static Scene critterScene = new Scene(critterGrid, screenWidth, screenHeight);
+	static Scene critterScene = new Scene(layer_critterWorld, screenWidth, screenHeight);
 
 	// grid, stage, scene for the user
 	static GridPane userGrid = new GridPane();
@@ -42,6 +48,13 @@ public class Main extends Application {
 	// vertical box, grid for the buttons
 	static VBox buttons = new VBox();
 	static GridPane buttonsGrid = new GridPane();
+
+	// grids for the gridline layers
+	static GridPane layer_vGridLines = new GridPane();
+	static GridPane layer_hGridLines = new GridPane();
+
+	// stack containing the layers for the critter world
+	static StackPane critterWorldStack = new StackPane();
 
 	private static String getExtension(File file) {
 		String fileName = file.getName();
@@ -137,7 +150,7 @@ public class Main extends Application {
 		list_runStats.setItems(FXCollections.observableList(validCritterTypes));
 		list_runStats.setTooltip(new Tooltip(
 				"Type of critters to view stats on.\n"
-				+ "You can select more than one option"));
+				+ "You can select more than one option by holding the 'ctrl' button"));
 		userGrid.add(list_runStats, 2, 2);
 
 		// Configure settings for the list
@@ -185,11 +198,27 @@ public class Main extends Application {
 	}
 
 	private static void setCritterGrid() {
-    	critterGrid.setAlignment(Pos.CENTER);
-		critterGrid.setHgap(10);
-		critterGrid.setVgap(10);
-		critterGrid.setPadding(new Insets(25, 25, 25, 25));
-		critterGrid.setStyle("-fx-background-color: #FFFFFF;");
+    	layer_critterWorld.setAlignment(Pos.TOP_LEFT);
+		layer_critterWorld.setHgap(5);
+		layer_critterWorld.setVgap(5);
+		layer_critterWorld.setPadding(new Insets(20, 20, 20, 20));
+		layer_critterWorld.setStyle("-fx-background-color: #FFFFFF;");
+	}
+
+	private static void setVerticalLinesGrid() {
+		layer_vGridLines.setAlignment(Pos.TOP_LEFT);
+		layer_vGridLines.setHgap(5);
+		layer_vGridLines.setVgap(5);
+		layer_vGridLines.setPadding(new Insets(20, 20, 20, 20));
+		layer_vGridLines.setStyle("-fx-background-color: #FFFFFF;");
+	}
+
+	private static void setHorizontalLinesGrid() {
+		layer_hGridLines.setAlignment(Pos.TOP_LEFT);
+		layer_hGridLines.setHgap(5);
+		layer_hGridLines.setVgap(5);
+		layer_hGridLines.setPadding(new Insets(20, 20, 20, 20));
+		layer_hGridLines.setStyle("-fx-background-color: #FFFFFF;");
 	}
 
 	private static void setUserGrid() {
@@ -212,12 +241,27 @@ public class Main extends Application {
 		userStage.setY(0);// TODO: generalize this for every computer screen
 	}
 
-	private static void placeUserScene() {
+	private static void setUserScene() {
 		// put the buttons and user grid into a box
 		HBox hbox = new HBox();
 		hbox.getChildren().addAll(userGrid, buttonsGrid);
 		userScene = new Scene(hbox, screenWidth, screenHeight);
 	}
+
+//	private static void setCritterScene() {
+//		Critter c = new Craig(); c.x_coord = 0; c.y_coord = 0;
+//
+//		critterWorldStack.getChildren().addAll(
+//			layer_hGridLines);//, layer_vGridLines
+//		critterWorldStack.getChildren().add(new Rectangle(100,100,Color.BLUE));
+//		c.paint(critterWorldStack);
+//
+//		StackPane sp2 = new StackPane();
+//		sp2.getChildren().add(new Rectangle());
+//
+//		critterScene = new Scene(critterWorldStack, screenWidth, screenHeight);
+////		critterScene = new Scene(stack, screenWidth, screenHeight);
+//	}
 
 	// TODO: idk how scaling grid sizes for different computers works
 	// TODO: looks promising http://www.java2s.com/Code/Java/JavaFX/Setstagexandyaccordingtoscreensize.htm
@@ -228,10 +272,12 @@ public class Main extends Application {
 			// set the stage and grid options
 			setCritterStage(); setCritterGrid();
 			setUserStage(); setUserGrid();
+			setHorizontalLinesGrid();
+			setVerticalLinesGrid();
 
 			// toggle these debug options to see grid lines
-			critterGrid.setGridLinesVisible(true);
-			userGrid.setGridLinesVisible(true);
+//			critterGrid.setGridLinesVisible(true);
+//			userGrid.setGridLinesVisible(true);
 
 			// place all of the buttons and labels for the user interface
 			placeNumTimeStepsOption();
@@ -239,11 +285,27 @@ public class Main extends Application {
 			placeRunStatsOption();
 			placeQuitOption();
 			placeButtons();
-			placeUserScene();
+
+			//GridPane layer_hGridLines = new GridPane(); // layer holding horizontal lines
+			//GridPane layer_vGridLines = new GridPane(); // layer holding vertical lines
+
+			for (int i = 0; i < 200; i += 4) {
+			    Line line_vertical = new Line(i, 0, i, 800);
+			    line_vertical.setStroke(Color.LIGHTGREY);
+			    Line line_horizontal = new Line(0, i, 800, i);
+			    line_horizontal.setStroke(Color.LIGHTGREY);
+			    layer_vGridLines.add(line_vertical, i, 0);
+			    layer_hGridLines.add(line_horizontal, 0, i);
+			}
 
 			Critter c = new Craig();
-			c.paint(critterGrid);
+//			c.x_coord = 0; c.y_coord = 0; c.paint(layer_critterWorld);
+//			Critter c2 = new Craig(); c2.x_coord = 2; c2.y_coord = 0; c2.paint(critterGrid);
 
+//		    critterScene = new Scene(layer_hGridLines, screenWidth, screenHeight);
+
+		    setUserScene();
+//		    setCritterScene();
 			Critter.displayWorld();
 		} catch(Exception e) {
 			e.printStackTrace();
