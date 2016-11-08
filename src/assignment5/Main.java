@@ -17,6 +17,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
@@ -245,10 +246,11 @@ public class Main extends Application {
 		// Add the button for obtaining stats on specified critters
 		// Add an invisible buffer button so that the actual button is centered
 		Button button_runStats = new Button("Run Stats");
+		
 		button_runStats.setMaxWidth(Double.MAX_VALUE);
 		addInvisibleButton();
 		buttons.getChildren().add(3, button_runStats);
-
+		
 		// Make the button actually run stats
 		button_runStats.setOnAction((event) -> {
 			try{
@@ -265,6 +267,7 @@ public class Main extends Application {
                 Method runStats = cls.getMethod("runStats", List.class);
                 String str = (String) runStats.invoke(cls, critterList);
                 showStatsMessage(className, str, 600, 100);
+                
             } catch(Exception e){
         		String msg = "Please choose one or more of the available critters.";
             	showErrorMessage(msg, 600, 100);
@@ -298,7 +301,24 @@ public class Main extends Application {
 		// Make the button actually quit the simulation
 		button_quit.setOnAction((event) -> { System.exit(0); });
 	}
-
+	
+	private static void addSlider(){
+		Slider slider = new Slider();
+		slider.setMin(0);
+		slider.setMax(100);
+		slider.setValue(40);
+		slider.setShowTickLabels(true);
+		slider.setShowTickMarks(true);
+		slider.setMajorTickUnit(50);
+		slider.setMinorTickCount(5);
+		slider.setBlockIncrement(10);
+		userGrid.add(slider, 0, 6);
+		Button sliderButton = new Button("Animate!");
+		userGrid.add(sliderButton, 1, 6);
+		sliderButton.setOnAction((event) -> { System.out.println(slider.getValue()); });
+		
+	}
+	
 	private static void placeButtons() {
 		buttons.setSpacing(10);
 		buttons.setPadding(new Insets(25, 25, 25, 0));
@@ -370,7 +390,7 @@ public class Main extends Application {
 			placeRunStatsOption();
 			placeQuitOption();
 			placeButtons();
-
+			addSlider();
 		    setUserScene();
 		    setCritterScene();
 			Critter.displayWorld();
