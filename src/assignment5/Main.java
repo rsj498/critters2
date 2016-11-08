@@ -17,6 +17,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
@@ -143,6 +144,7 @@ public class Main extends Application {
         dialog.setTitle(cls + " Stats");
         dialog.show();
 	}
+
 	private static void placeNumTimeStepsOption() {
 		// Set the label and tool tip for executing time steps
 		Label label_numTimeSteps = new Label("Number of Time Steps: ");
@@ -338,6 +340,22 @@ public class Main extends Application {
 		buttonsGrid.add(buttons, 0, 0);
 	}
 
+	private static void placeSlider() {
+		Slider slider = new Slider();
+		slider.setMin(0);
+		slider.setMax(100);
+		slider.setValue(40);
+		slider.setShowTickLabels(true);
+		slider.setShowTickMarks(true);
+		slider.setMajorTickUnit(50);
+		slider.setMinorTickCount(5);
+		slider.setBlockIncrement(10);
+		userGrid.add(slider, 0, 5);
+		Button sliderButton = new Button("Animate!");
+		userGrid.add(sliderButton, 1, 6);
+		sliderButton.setOnAction((event) -> { System.out.println(slider.getValue()); });
+	}
+
 	private static void setCritterGrid() {
     	layer_critterWorld.setAlignment(Pos.TOP_LEFT);
 		layer_critterWorld.setHgap(5);
@@ -402,6 +420,7 @@ public class Main extends Application {
 			placeInvisibleButton();
 			placeSeedOption();
 			placeQuitOption();
+			placeSlider();
 			placeButtons();
 
 		    setUserScene();
