@@ -6,11 +6,14 @@ import java.util.*;
 
 import assignment5.Critter;
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -347,6 +350,26 @@ public class Main extends Application {
 		Button sliderButton = new Button("Run Simulation");
 		sliderButton.setMaxWidth(Double.MAX_VALUE);
 		buttons.getChildren().add(sliderButton);
+		Button stopButton = new Button("Stop Simulation");
+		stopButton.setMaxWidth(Double.MAX_VALUE);
+		buttons.getChildren().add(stopButton);
+		BooleanProperty stopped = new SimpleBooleanProperty();
+		stopped.set(false);
+		sliderButton.setOnAction((event) -> { 
+			int speed = (int) slider.getValue();
+			for(Node b: buttons.getChildren()){
+				b.setDisable(true);
+			}
+			stopButton.setDisable(false);
+		//	while(!stopped.get()){			
+				
+				for(int i = 0; i < speed; i++){ Critter.worldTimeStep(); }
+			    Critter.displayWorld();
+			    stopButton.setOnAction((event2) -> { 
+					stopped.set(true);
+				});
+			//}
+		});
 	}
 
 	private static void placeQuitOption() {
