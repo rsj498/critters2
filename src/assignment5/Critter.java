@@ -386,8 +386,8 @@ public abstract class Critter {
         try {
             Object obj = Class.forName(fullClassName).newInstance();
             if (obj instanceof Critter) { // valid critter --> put into the world
-                int randX = getRandomInt(Params.world_width - 1);
-                int randY = getRandomInt(Params.world_height - 1);
+                int randX = getRandomInt(Params.world_width);
+                int randY = getRandomInt(Params.world_height);
 
                 Critter c = (Critter) obj;
                 c.energy = Params.start_energy;

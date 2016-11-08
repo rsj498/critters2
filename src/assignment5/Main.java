@@ -35,8 +35,8 @@ public class Main extends Application {
 	// screen width and height factors
 //	private final static int screenWidthScalingFactor = critterBoxSize;
 //	private final static int screenHeightScalingFactor = critterBoxSize;
-	public static int screenWidth = 650;
-	public static int screenHeight = 600;
+	public static int screenWidth = 660;
+	public static int screenHeight = 660;
 
 	// constants used for display
 	private static final int numCrittersPerRow = Params.world_width;
@@ -68,6 +68,8 @@ public class Main extends Application {
 //		while (screenWidth < 600) { screenWidth += 10; }
 //		while (screenHeight < 600) { screenHeight += 10; }
 //	}
+
+	// TODO: setDisable(true)
 
 	private static String getExtension(File file) {
 		String fileName = file.getName();
@@ -162,10 +164,11 @@ public class Main extends Application {
 
 		// Set the pull down menu for the types of critters one can add to the world
 		ChoiceBox<String> choiceBox_addCritter = new ChoiceBox<String>();
+		choiceBox_addCritter.setMaxWidth(Double.MAX_VALUE);
 		choiceBox_addCritter.setItems(FXCollections.observableList(validCritterTypes));
 		choiceBox_addCritter.setTooltip(
 				new Tooltip("Type of critters to add"));
-		userGrid.add(choiceBox_addCritter, 2, 1);
+		userGrid.add(choiceBox_addCritter, 1, 2);
 
 		// Add the button for adding critters
 		Button button_addCritters = new Button("Add Critters");
@@ -192,18 +195,18 @@ public class Main extends Application {
 		});
 	}
 
-	private static void addInvisibleButton() {
+	private static void placeInvisibleButton() {
 		Button button_buffer = new Button();
 		button_buffer.setVisible(false);
-		button_buffer.setMinHeight(13);
-		button_buffer.setMaxHeight(13);
+		button_buffer.setMinHeight(10);
+		button_buffer.setMaxHeight(10);
 		buttons.getChildren().add(button_buffer);
 	}
 
 	private static void placeRunStatsOption() throws Exception {
 		// Place the "Run Stats" label and text fields
 		Label label_runStats = new Label("Type of Critter(s): ");
-		userGrid.add(label_runStats, 0, 2);
+		userGrid.add(label_runStats, 0, 3);
 
 		// Look through all .class files and grab all that are subclasses of critter
 		ArrayList<String> validCritterTypes = getAllCritterSubclasses();
@@ -214,7 +217,7 @@ public class Main extends Application {
 		list_runStats.setTooltip(new Tooltip(
 				"Type of critters to view stats on.\n"
 				+ "You can select more than one option by holding the 'ctrl' button"));
-		userGrid.add(list_runStats, 2, 2);
+		userGrid.add(list_runStats, 1, 3);
 
 		// Configure settings for the list
 		list_runStats.setPrefHeight(70);
@@ -225,8 +228,7 @@ public class Main extends Application {
 		// Add an invisible buffer button so that the actual button is centered
 		Button button_runStats = new Button("Run Stats");
 		button_runStats.setMaxWidth(Double.MAX_VALUE);
-		addInvisibleButton();
-		buttons.getChildren().add(3, button_runStats);
+		buttons.getChildren().add(button_runStats);
 
 		// Make the button actually run stats
 		button_runStats.setOnAction((event) -> {
@@ -252,17 +254,47 @@ public class Main extends Application {
 
 	public static void addGridLines() {
 		for (int i = 0; i < 2000; i += critterBoxSize) {
+			int lineLength = Math.min(screenHeight, screenWidth);
+			lineLength = lineLength / critterBoxSize * critterBoxSize;
+//			lineLength = (int) ((Math.ceil(lineLength / critterBoxSize) + 1) * critterBoxSize);
+
 			if (i <= screenWidth  &&  i <= screenHeight) {
-			    Line line_vertical = new Line(i, 0, i, Math.min(screenHeight, screenWidth));
+			    Line line_vertical = new Line(i, 0, i, lineLength);
 			    line_vertical.setStroke(Color.LIGHTGREY);
 			    critterWorldStack.getChildren().add(line_vertical);
 			}
 		    if (i <= screenHeight  &&  i <= screenWidth) {
-		    	Line line_horizontal = new Line(0, i, Math.min(screenWidth, screenHeight), i);
+		    	Line line_horizontal = new Line(0, i, lineLength, i);
 		    	line_horizontal.setStroke(Color.LIGHTGREY);
 			    critterWorldStack.getChildren().add(line_horizontal);
 		    }
 		}
+	}
+
+	private static void placeSeedOption() {
+		// Set the label and tool tip for setting the seed
+		Label label_seed = new Label("Seed Number: ");
+		userGrid.add(label_seed, 0, 4);
+		TextField textField_seed = new TextField();
+		textField_seed.setTooltip(
+			new Tooltip("This seed will help repoduce simulation behavior"));
+		userGrid.add(textField_seed, 1, 4);
+
+		// Add the button for executing time steps
+		Button button_seed = new Button("Set Seed");
+		button_seed.setMaxWidth(Double.MAX_VALUE);
+		buttons.getChildren().add(button_seed);
+
+		// Make the button actually execute time steps
+		button_seed.setOnAction((event) -> {
+			try{
+			    int seed = Integer.parseInt(textField_seed.getText());
+			    Critter.setSeed(seed);
+            } catch(Exception e){
+            	String msg = "Please enter a valid integer for the seed";
+            	showErrorMessage(msg, 600, 100);
+            }
+		});
 	}
 
 	private static void placeQuitOption() {
@@ -270,7 +302,6 @@ public class Main extends Application {
 		Button button_quit = new Button("Quit");
 		button_quit.setMaxWidth(Double.MAX_VALUE);
 		button_quit.setTextFill(Color.RED);
-		addInvisibleButton();
 		buttons.getChildren().add(button_quit);
 
 		// Make the button actually quit the simulation
@@ -283,7 +314,6 @@ public class Main extends Application {
 		buttonsGrid.setHgap(10);
 		buttonsGrid.setVgap(10);
 		buttonsGrid.add(buttons, 0, 0);
-		buttonsGrid.setStyle("-fx-background-color: #FFFFFF;");
 	}
 
 	private static void setCritterGrid() {
@@ -299,13 +329,12 @@ public class Main extends Application {
 		userGrid.setHgap(10);
 		userGrid.setVgap(10);
 		userGrid.setPadding(new Insets(25, 10, 25, 25));
-		userGrid.setStyle("-fx-background-color: #FFFFFF;");
 	}
 
 	private static void setCritterStage() {
 		critterStage.setTitle("Critter World");
-		critterStage.setX(710); // TODO: generalize this for every computer screen
-		critterStage.setY(0);// TODO: generalize this for every computer screen
+		critterStage.setX(700); // TODO: generalize this for every computer screen
+		critterStage.setY(0);   // TODO: generalize this for every computer screen
 	}
 
 	private static void setUserStage() {
@@ -327,7 +356,6 @@ public class Main extends Application {
 
 	// TODO: idk how scaling grid sizes for different computers works
 	// TODO: looks promising http://www.java2s.com/Code/Java/JavaFX/Setstagexandyaccordingtoscreensize.htm
-	// TODO: prob get rid of layer_CritterWorld
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -345,7 +373,12 @@ public class Main extends Application {
 			// place all of the buttons and labels for the user interface
 			placeNumTimeStepsOption();
 			placeAddCrittersOption();
+			placeInvisibleButton();
+			placeInvisibleButton();
+			placeInvisibleButton();
 			placeRunStatsOption();
+			placeInvisibleButton();
+			placeSeedOption();
 			placeQuitOption();
 			placeButtons();
 
