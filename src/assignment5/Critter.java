@@ -212,10 +212,10 @@ public abstract class Critter {
 		int placementAdjustment = ((Main.critterBoxSize - critterSize) / 2);
 
 		// do some math to find the correct box for the critter
-		double boxNumX = Math.floor(x_coord / Main.critterBoxSize);
-		double boxNumY = Math.floor(y_coord / Main.critterBoxSize);
-		s.relocate(boxNumX * Main.critterBoxSize + placementAdjustment,
-				   boxNumY * Main.critterBoxSize + placementAdjustment);
+//		double boxNumX = Math.floor(x_coord / Main.critterBoxSize);
+//		double boxNumY = Math.floor(y_coord / Main.critterBoxSize);
+		s.relocate(x_coord * Main.critterBoxSize + placementAdjustment,
+				   y_coord * Main.critterBoxSize + placementAdjustment);
 		g.getChildren().add(s);
 	}
 
@@ -386,8 +386,8 @@ public abstract class Critter {
         try {
             Object obj = Class.forName(fullClassName).newInstance();
             if (obj instanceof Critter) { // valid critter --> put into the world
-                int randX = getRandomInt(Params.world_width);
-                int randY = getRandomInt(Params.world_height);
+                int randX = getRandomInt(Params.world_width - 1);
+                int randY = getRandomInt(Params.world_height - 1);
 
                 Critter c = (Critter) obj;
                 c.energy = Params.start_energy;
@@ -728,7 +728,10 @@ public abstract class Critter {
      * Display the critter world grid and user interface.
      */
     public static void displayWorld() {
+    	Main.critterWorldStack = new Group();
+    	Main.addGridLines();
     	for (Critter c : population) { c.paint(Main.critterWorldStack); }
+    	Main.setCritterScene();
 
 		Main.critterStage.setScene(Main.critterScene);
 		Main.critterStage.show();
