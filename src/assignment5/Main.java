@@ -1,5 +1,6 @@
 package assignment5;
 
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -9,6 +10,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -16,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
@@ -98,6 +101,18 @@ public class Main extends Application {
 		Button button_timeSteps = new Button("Execute Time Steps");
 		button_timeSteps.setMaxWidth(Double.MAX_VALUE);
 		buttons.getChildren().add(button_timeSteps);
+		
+		// Making button execute time steps
+		button_timeSteps.setOnAction((event) -> {
+			try{
+			    int numSteps = Integer.parseInt(textField_numTimeSteps.getText());			 
+                for(int i = 0; i < numSteps; i++){ Critter.worldTimeStep(); }
+            }
+            catch(Exception e){
+                System.out.println("Enter an int please.");
+            }
+		});
+
 	}
 
 	private static void placeAddCrittersOption() throws Exception {
