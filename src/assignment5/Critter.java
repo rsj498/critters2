@@ -44,7 +44,7 @@ public abstract class Critter {
 	// ==========================================================================
 	// ==========================================================================
 
-	public static final int critterSize = 20;
+	public static final int critterSize = (int) (Main.critterBoxSize * 0.6);
 	private static String myPackage;
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
@@ -53,8 +53,8 @@ public abstract class Critter {
     private static boolean isFightingPhase = false;
     private boolean hasMoved = false;
     private int energy = 0;
-    private int x_coord;
-	private int y_coord;
+    public int x_coord; // TODO: put this back to private
+	public int y_coord;
 
 	public abstract void doTimeStep();
 	public abstract boolean fight(String oponent);
@@ -204,12 +204,18 @@ public abstract class Critter {
 			default:       break;
 		}
 
+		// set appropriate colors
 		s.setFill(viewFillColor());
 		s.setStroke(viewOutlineColor());
-//		g.add(s, x_coord, y_coord);
-		int placementFactor = ((Main.critterBoxSize - critterSize) / 2);
-		s.relocate(x_coord * Main.critterBoxSize + placementFactor - 2,
-				   y_coord * Main.critterBoxSize + placementFactor - 2);
+
+		// adjust the critter to the middle of the box
+		int placementAdjustment = ((Main.critterBoxSize - critterSize) / 2);
+
+		// do some math to find the correct box for the critter
+		double boxNumX = Math.floor(x_coord / Main.critterBoxSize);
+		double boxNumY = Math.floor(y_coord / Main.critterBoxSize);
+		s.relocate(boxNumX * Main.critterBoxSize + placementAdjustment,
+				   boxNumY * Main.critterBoxSize + placementAdjustment);
 		g.getChildren().add(s);
 	}
 
@@ -719,6 +725,8 @@ public abstract class Critter {
      * Display the critter world grid and user interface.
      */
     public static void displayWorld() {
+    	for (Critter c : population) { c.paint(Main.critterWorldStack); }
+
 		Main.critterStage.setScene(Main.critterScene);
 		Main.critterStage.show();
 

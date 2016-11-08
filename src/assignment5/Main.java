@@ -1,44 +1,32 @@
 package assignment5;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
-import java.lang.reflect.Method;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import javax.security.auth.x500.X500Principal;
-
 import assignment5.Critter;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -67,7 +55,10 @@ public class Main extends Application {
 	static Group critterWorldStack = new Group();
 
 	// constants used for display
-	public static final int critterBoxSize = Critter.critterSize + 10;
+	private static final int numCrittersPerRow = 2;
+	public static final int critterBoxSize =
+		(int) Math.sqrt(Params.world_height * Params.world_width /
+						(numCrittersPerRow * numCrittersPerRow));
 	private static final String myPackage = Critter.class.getPackage().toString().split(" ")[1];
 
 	private static String getExtension(File file) {
@@ -179,6 +170,7 @@ public class Main extends Application {
 			    int numSteps = Integer.parseInt(textField_addNumCritter.getText());
 			    if (numSteps < 0) { throw new NumberFormatException(); }
 			    for(int i = 0; i < numSteps; i++){ Critter.makeCritter(critterChoice); }
+			    Critter.displayWorld();
             } catch(Exception e){
             	if (e instanceof InvalidCritterException) {
             		String msg = "Please choose one of the available critters.";
@@ -250,13 +242,17 @@ public class Main extends Application {
 	}
 
 	private static void addGridLines() {
-		for (int i = 0; i < 1500; i += critterBoxSize) {
-		    Line line_vertical = new Line(i, 0, i, 2000);
-		    line_vertical.setStroke(Color.LIGHTGREY);
-		    Line line_horizontal = new Line(0, i, 2000, i);
-		    line_horizontal.setStroke(Color.LIGHTGREY);
-		    critterWorldStack.getChildren().add(line_vertical);
-		    critterWorldStack.getChildren().add(line_horizontal);
+		for (int i = 0; i < 2000; i += critterBoxSize) {
+			if (i <= Params.world_width) {
+			    Line line_vertical = new Line(i, 0, i, Params.world_height);
+			    line_vertical.setStroke(Color.LIGHTGREY);
+			    critterWorldStack.getChildren().add(line_vertical);
+			}
+		    if (i <= Params.world_height) {
+		    	Line line_horizontal = new Line(0, i, Params.world_width, i);
+		    	line_horizontal.setStroke(Color.LIGHTGREY);
+			    critterWorldStack.getChildren().add(line_horizontal);
+		    }
 		}
 	}
 
@@ -344,7 +340,6 @@ public class Main extends Application {
 
 		    setUserScene();
 		    setCritterScene();
-			Critter.displayWorld();
 			Critter.displayWorld();
 		} catch(Exception e) {
 			e.printStackTrace();
