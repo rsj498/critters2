@@ -11,6 +11,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -49,13 +50,11 @@ public class Main extends Application {
 	static VBox buttons = new VBox();
 	static GridPane buttonsGrid = new GridPane();
 
-	// grids for the gridline layers
-	static GridPane layer_vGridLines = new GridPane();
-	static GridPane layer_hGridLines = new GridPane();
-
 	// stack containing the layers for the critter world
-	static StackPane critterWorldStack = new StackPane();
+	static Group critterWorldStack = new Group();
 
+	// constants used for display
+	public static final int critterBoxSize = Critter.critterSize + 10;
 	private static String getExtension(File file) {
 		String fileName = file.getName();
 		int i = fileName.lastIndexOf('.');
@@ -183,6 +182,17 @@ public class Main extends Application {
 		buttons.getChildren().add(3, button_runStats);
 	}
 
+	private static void addGridLines() {
+		for (int i = 0; i < 1500; i += critterBoxSize) {
+		    Line line_vertical = new Line(i, 0, i, 2000);
+		    line_vertical.setStroke(Color.LIGHTGREY);
+		    Line line_horizontal = new Line(0, i, 2000, i);
+		    line_horizontal.setStroke(Color.LIGHTGREY);
+		    critterWorldStack.getChildren().add(line_vertical);
+		    critterWorldStack.getChildren().add(line_horizontal);
+		}
+	}
+
 	// TODO: write this
 	private static void placeQuitOption() {
 
@@ -203,22 +213,6 @@ public class Main extends Application {
 		layer_critterWorld.setVgap(5);
 		layer_critterWorld.setPadding(new Insets(20, 20, 20, 20));
 		layer_critterWorld.setStyle("-fx-background-color: #FFFFFF;");
-	}
-
-	private static void setVerticalLinesGrid() {
-		layer_vGridLines.setAlignment(Pos.TOP_LEFT);
-		layer_vGridLines.setHgap(5);
-		layer_vGridLines.setVgap(5);
-		layer_vGridLines.setPadding(new Insets(20, 20, 20, 20));
-		layer_vGridLines.setStyle("-fx-background-color: #FFFFFF;");
-	}
-
-	private static void setHorizontalLinesGrid() {
-		layer_hGridLines.setAlignment(Pos.TOP_LEFT);
-		layer_hGridLines.setHgap(5);
-		layer_hGridLines.setVgap(5);
-		layer_hGridLines.setPadding(new Insets(20, 20, 20, 20));
-		layer_hGridLines.setStyle("-fx-background-color: #FFFFFF;");
 	}
 
 	private static void setUserGrid() {
@@ -263,21 +257,35 @@ public class Main extends Application {
 ////		critterScene = new Scene(stack, screenWidth, screenHeight);
 //	}
 
+	private static void setCritterScene() {
+		/*Rectangle r = new Rectangle(100,100,Color.RED);
+		r.relocate(300, 500);
+		critterWorldStack.getChildren().add(layer_vGridLines);
+		critterWorldStack.getChildren().add(layer_hGridLines);
+		critterWorldStack.getChildren().add(r);
+		Rectangle rr = new Rectangle(50,50,Color.ALICEBLUE);
+		rr.relocate(370, 520);
+		critterWorldStack.getChildren().add(rr);
+		Line line_vertical = new Line(100, 0, 100, 2000);
+		critterWorldStack.getChildren().add(line_vertical);*/
+
+		critterScene = new Scene(critterWorldStack, screenWidth, screenHeight);
+	}
+
 	// TODO: idk how scaling grid sizes for different computers works
 	// TODO: looks promising http://www.java2s.com/Code/Java/JavaFX/Setstagexandyaccordingtoscreensize.htm
+	// TODO: prob get rid of layer_CritterWorld
 
 	@Override
 	public void start(Stage primaryStage) {
 		try {
 			// set the stage and grid options
-			setCritterStage(); setCritterGrid();
+			setCritterStage(); setCritterGrid(); addGridLines();
 			setUserStage(); setUserGrid();
-			setHorizontalLinesGrid();
-			setVerticalLinesGrid();
 
 			// toggle these debug options to see grid lines
-//			critterGrid.setGridLinesVisible(true);
-//			userGrid.setGridLinesVisible(true);
+//			layer_critterWorld.setGridLinesVisible(true);
+			userGrid.setGridLinesVisible(true);
 
 			// place all of the buttons and labels for the user interface
 			placeNumTimeStepsOption();
@@ -289,23 +297,8 @@ public class Main extends Application {
 			//GridPane layer_hGridLines = new GridPane(); // layer holding horizontal lines
 			//GridPane layer_vGridLines = new GridPane(); // layer holding vertical lines
 
-			for (int i = 0; i < 200; i += 4) {
-			    Line line_vertical = new Line(i, 0, i, 800);
-			    line_vertical.setStroke(Color.LIGHTGREY);
-			    Line line_horizontal = new Line(0, i, 800, i);
-			    line_horizontal.setStroke(Color.LIGHTGREY);
-			    layer_vGridLines.add(line_vertical, i, 0);
-			    layer_hGridLines.add(line_horizontal, 0, i);
-			}
-
-			Critter c = new Craig();
-//			c.x_coord = 0; c.y_coord = 0; c.paint(layer_critterWorld);
-//			Critter c2 = new Craig(); c2.x_coord = 2; c2.y_coord = 0; c2.paint(critterGrid);
-
-//		    critterScene = new Scene(layer_hGridLines, screenWidth, screenHeight);
-
 		    setUserScene();
-//		    setCritterScene();
+		    setCritterScene();
 			Critter.displayWorld();
 		} catch(Exception e) {
 			e.printStackTrace();

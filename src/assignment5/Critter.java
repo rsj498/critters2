@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javafx.scene.Group;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -53,8 +53,8 @@ public abstract class Critter {
     private static boolean isFightingPhase = false;
     private boolean hasMoved = false;
     private int energy = 0;
-    public int x_coord; // TODO: change this back
-	public int y_coord;
+    private int x_coord;
+	private int y_coord;
 
 	public abstract void doTimeStep();
 	public abstract boolean fight(String oponent);
@@ -90,7 +90,7 @@ public abstract class Critter {
 		}
 	}
 
-	protected final void paint(StackPane g) {
+	protected final void paint(Group g) {
 		Shape s = new Polygon();
 		double[] circleCoordinates = new double[] {
 			(critterSize/2) * Math.cos(90),   (critterSize/2) * Math.sin(90),
@@ -206,7 +206,10 @@ public abstract class Critter {
 
 		s.setFill(viewFillColor());
 		s.setStroke(viewOutlineColor());
-		//g.add(s, x_coord, y_coord); TODO: put that back
+//		g.add(s, x_coord, y_coord);
+		int placementFactor = ((Main.critterBoxSize - critterSize) / 2);
+		s.relocate(x_coord * Main.critterBoxSize + placementFactor - 2,
+				   y_coord * Main.critterBoxSize + placementFactor - 2);
 		g.getChildren().add(s);
 	}
 
