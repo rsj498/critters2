@@ -112,6 +112,27 @@ public class Main extends Application {
         dialog.show();
 	}
 
+	private static VBox makeStatsMessage(String msg) {
+		VBox dialogVbox = new VBox(30);
+        dialogVbox.setAlignment(Pos.CENTER);
+        Text statsMessage = new Text(msg);
+        statsMessage.setFill(Color.BLACK);
+        statsMessage.setFont(
+        	Font.font(Font.getDefault().toString(), 15));
+        dialogVbox.getChildren().add(statsMessage);
+        return dialogVbox;
+	}
+
+	private static void showStatsMessage(String cls, String msg, int boxSizeX, int boxSizeY) {
+		final Stage dialog = new Stage();
+        dialog.initModality(Modality.NONE);
+        dialog.initOwner(userStage);
+        VBox dialogVbox = makeStatsMessage(msg);
+        Scene dialogScene = new Scene(dialogVbox, boxSizeX, boxSizeY);
+        dialog.setScene(dialogScene);
+        dialog.setTitle(cls + " Stats");
+        dialog.show();
+	}
 	private static void placeNumTimeStepsOption() {
 		// Set the label and tool tip for executing time steps
 		Label label_numTimeSteps = new Label("Number of Time Steps: ");
@@ -233,7 +254,8 @@ public class Main extends Application {
                 critterList = Critter.getInstances(className);
                 Class<?> cls = Class.forName(fullClassName);
                 Method runStats = cls.getMethod("runStats", List.class);
-                runStats.invoke(cls, critterList);
+                String str = (String) runStats.invoke(cls, critterList);
+                showStatsMessage(className, str, 600, 100);
             } catch(Exception e){
         		String msg = "Please choose one or more of the available critters.";
             	showErrorMessage(msg, 600, 100);
