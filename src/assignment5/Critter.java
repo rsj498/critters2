@@ -421,6 +421,19 @@ public abstract class Critter {
         return res;
     }
 
+    public static Critter getInstance(String critter_class_name) throws InvalidCritterException {
+        String fullClassName = myPackage + "." + critter_class_name;
+        try{
+        	for(Critter c: population){
+        		if(Class.forName(fullClassName).isInstance(c))
+        			return c;
+        	}
+        } catch (ClassNotFoundException e) {
+            throw new InvalidCritterException(critter_class_name);
+        }
+        return null;
+    }
+
     /**
      * Gets a list of critters of a specific type.
      * @param critter_class_name What kind of Critter is to be listed.  Unqualified class name.

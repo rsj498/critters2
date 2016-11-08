@@ -2,17 +2,22 @@ package assignment5;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.ArrayList;
+import java.lang.reflect.Method;
+import java.lang.reflect.Method;
+import java.util.*;
 
 import javax.security.auth.x500.X500Principal;
 
+import assignment5.Critter;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -30,6 +35,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -58,6 +68,8 @@ public class Main extends Application {
 
 	// constants used for display
 	public static final int critterBoxSize = Critter.critterSize + 10;
+	private static final String myPackage = Critter.class.getPackage().toString().split(" ")[1];
+
 	private static String getExtension(File file) {
 		String fileName = file.getName();
 		int i = fileName.lastIndexOf('.');
@@ -88,31 +100,52 @@ public class Main extends Application {
 		return validCritterTypes;
 	}
 
+	private static VBox makeErrorMessage(String msg) {
+		VBox dialogVbox = new VBox(20);
+        dialogVbox.setAlignment(Pos.CENTER);
+        Text errorMessage = new Text(msg);
+        errorMessage.setFill(Color.RED);
+        errorMessage.setFont(
+        	Font.font(Font.getDefault().toString(), FontWeight.BOLD, 20));
+        dialogVbox.getChildren().add(errorMessage);
+        return dialogVbox;
+	}
+
+	private static void showErrorMessage(String msg, int boxSizeX, int boxSizeY) {
+		final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(userStage);
+        VBox dialogVbox = makeErrorMessage(msg);
+        Scene dialogScene = new Scene(dialogVbox, boxSizeX, boxSizeY);
+        dialog.setScene(dialogScene);
+        dialog.show();
+	}
+
 	private static void placeNumTimeStepsOption() {
 		// Set the label and tool tip for executing time steps
 		Label label_numTimeSteps = new Label("Number of Time Steps: ");
 		userGrid.add(label_numTimeSteps, 0, 0);
 		TextField textField_numTimeSteps = new TextField();
 		textField_numTimeSteps.setTooltip(
-				new Tooltip("Number of time steps to execute"));
+			new Tooltip("Number of time steps to execute"));
 		userGrid.add(textField_numTimeSteps, 1, 0);
 
 		// Add the button for executing time steps
 		Button button_timeSteps = new Button("Execute Time Steps");
 		button_timeSteps.setMaxWidth(Double.MAX_VALUE);
 		buttons.getChildren().add(button_timeSteps);
-		
-		// Making button execute time steps
+
+		// Make the button actually execute time steps
 		button_timeSteps.setOnAction((event) -> {
 			try{
-			    int numSteps = Integer.parseInt(textField_numTimeSteps.getText());			 
-                for(int i = 0; i < numSteps; i++){ Critter.worldTimeStep(); }
-            }
-            catch(Exception e){
-                System.out.println("Enter an int please.");
+			    int numSteps = Integer.parseInt(textField_numTimeSteps.getText());
+			    if (numSteps < 0) { throw new NumberFormatException(); }
+			    for(int i = 0; i < numSteps; i++){ Critter.worldTimeStep(); }
+            } catch(Exception e){
+            	String msg = "Please enter a positive integer greater than or equal to zero.";
+            	showErrorMessage(msg, 600, 100);
             }
 		});
-
 	}
 
 	private static void placeAddCrittersOption() throws Exception {
@@ -132,23 +165,38 @@ public class Main extends Application {
 		choiceBox_addCritter.setItems(FXCollections.observableList(validCritterTypes));
 		choiceBox_addCritter.setTooltip(
 				new Tooltip("Type of critters to add"));
-
-		// Enable an action upon choosing an option
-		choiceBox_addCritter.getSelectionModel().selectedIndexProperty().addListener(
-			new ChangeListener<Number>() {
-				@Override
-				public void changed(ObservableValue<? extends Number> observable,
-									Number oldValue, Number newValue) {
-					// TODO: fill this out
-				}
-			}
-		);
 		userGrid.add(choiceBox_addCritter, 2, 1);
 
 		// Add the button for adding critters
 		Button button_addCritters = new Button("Add Critters");
 		button_addCritters.setMaxWidth(Double.MAX_VALUE);
 		buttons.getChildren().add(button_addCritters);
+
+		// Make the button actually add critters
+		button_addCritters.setOnAction((event) -> {
+			try{
+				String critterChoice = choiceBox_addCritter.getSelectionModel().getSelectedItem();
+			    int numSteps = Integer.parseInt(textField_addNumCritter.getText());
+			    if (numSteps < 0) { throw new NumberFormatException(); }
+			    for(int i = 0; i < numSteps; i++){ Critter.makeCritter(critterChoice); }
+            } catch(Exception e){
+            	if (e instanceof InvalidCritterException) {
+            		String msg = "Please choose one of the available critters.";
+                	showErrorMessage(msg, 500, 100);
+            	} else if (e instanceof NumberFormatException) {
+            		String msg = "Please enter a positive integer greater than or equal to zero.";
+                    showErrorMessage(msg, 600, 100);
+            	}
+            }
+		});
+	}
+
+	private static void addInvisibleButton() {
+		Button button_buffer = new Button();
+		button_buffer.setVisible(false);
+		button_buffer.setMinHeight(13);
+		button_buffer.setMaxHeight(13);
+		buttons.getChildren().add(button_buffer);
 	}
 
 	private static void placeRunStatsOption() throws Exception {
@@ -172,29 +220,33 @@ public class Main extends Application {
 		list_runStats.setPrefWidth(70);
 		list_runStats.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-		// Enable an action upon choosing an option
-		list_runStats.getSelectionModel().selectedIndexProperty().addListener(
-			new ChangeListener<Number>() {
-				@Override
-				public void changed(ObservableValue<? extends Number> observable,
-									Number oldValue, Number newValue) {
-					// TODO: figure out what to do with
-					// System.out.println(list_runStats.getSelectionModel().getSelectedItems());
-					// TODO: probably call that ^ when someone clicks the runStats button
-				}
-			}
-		);
-
 		// Add the button for obtaining stats on specified critters
 		// Add an invisible buffer button so that the actual button is centered
 		Button button_runStats = new Button("Run Stats");
 		button_runStats.setMaxWidth(Double.MAX_VALUE);
-		Button button_buffer = new Button();
-		button_buffer.setVisible(false);
-		button_buffer.setMinHeight(13);
-		button_buffer.setMaxHeight(13);
-		buttons.getChildren().add(button_buffer);
+		addInvisibleButton();
 		buttons.getChildren().add(3, button_runStats);
+
+		// Make the button actually run stats
+		button_runStats.setOnAction((event) -> {
+			try{
+				ObservableList<String> critterChoice = list_runStats.getSelectionModel().getSelectedItems();
+				List<Critter> critterList = new ArrayList<Critter>();
+
+				String className = critterChoice.get(0); //  TODO: do me
+                String fullClassName = myPackage + "." + className;
+//                for (String s : critterChoice) {
+//                	critterList.add(Critter.getInstance(s));
+//                }
+                critterList = Critter.getInstances(className);
+                Class<?> cls = Class.forName(fullClassName);
+                Method runStats = cls.getMethod("runStats", List.class);
+                runStats.invoke(cls, critterList);
+            } catch(Exception e){
+        		String msg = "Please choose one or more of the available critters.";
+            	showErrorMessage(msg, 600, 100);
+            }
+		});
 	}
 
 	private static void addGridLines() {
@@ -208,9 +260,16 @@ public class Main extends Application {
 		}
 	}
 
-	// TODO: write this
 	private static void placeQuitOption() {
+		// Add the quit button
+		Button button_quit = new Button("Quit");
+		button_quit.setMaxWidth(Double.MAX_VALUE);
+		button_quit.setTextFill(Color.RED);
+		addInvisibleButton();
+		buttons.getChildren().add(button_quit);
 
+		// Make the button actually quit the simulation
+		button_quit.setOnAction((event) -> { System.exit(0); });
 	}
 
 	private static void placeButtons() {
@@ -257,33 +316,7 @@ public class Main extends Application {
 		userScene = new Scene(hbox, screenWidth, screenHeight);
 	}
 
-//	private static void setCritterScene() {
-//		Critter c = new Craig(); c.x_coord = 0; c.y_coord = 0;
-//
-//		critterWorldStack.getChildren().addAll(
-//			layer_hGridLines);//, layer_vGridLines
-//		critterWorldStack.getChildren().add(new Rectangle(100,100,Color.BLUE));
-//		c.paint(critterWorldStack);
-//
-//		StackPane sp2 = new StackPane();
-//		sp2.getChildren().add(new Rectangle());
-//
-//		critterScene = new Scene(critterWorldStack, screenWidth, screenHeight);
-////		critterScene = new Scene(stack, screenWidth, screenHeight);
-//	}
-
 	private static void setCritterScene() {
-		/*Rectangle r = new Rectangle(100,100,Color.RED);
-		r.relocate(300, 500);
-		critterWorldStack.getChildren().add(layer_vGridLines);
-		critterWorldStack.getChildren().add(layer_hGridLines);
-		critterWorldStack.getChildren().add(r);
-		Rectangle rr = new Rectangle(50,50,Color.ALICEBLUE);
-		rr.relocate(370, 520);
-		critterWorldStack.getChildren().add(rr);
-		Line line_vertical = new Line(100, 0, 100, 2000);
-		critterWorldStack.getChildren().add(line_vertical);*/
-
 		critterScene = new Scene(critterWorldStack, screenWidth, screenHeight);
 	}
 
@@ -309,11 +342,9 @@ public class Main extends Application {
 			placeQuitOption();
 			placeButtons();
 
-			//GridPane layer_hGridLines = new GridPane(); // layer holding horizontal lines
-			//GridPane layer_vGridLines = new GridPane(); // layer holding vertical lines
-
 		    setUserScene();
 		    setCritterScene();
+			Critter.displayWorld();
 			Critter.displayWorld();
 		} catch(Exception e) {
 			e.printStackTrace();
