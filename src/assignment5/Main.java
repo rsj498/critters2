@@ -353,7 +353,7 @@ public class Main extends Application {
 		userGrid.add(slider, 0, 5);
 		Button sliderButton = new Button("Animate!");
 		userGrid.add(sliderButton, 1, 6);
-		sliderButton.setOnAction((event) -> { System.out.println(slider.getValue()); });
+		sliderButton.setOnAction((event) -> { System.out.println((int)slider.getValue()); });
 	}
 
 	private static void setCritterGrid() {
