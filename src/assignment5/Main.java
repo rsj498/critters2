@@ -321,17 +321,6 @@ public class Main extends Application {
 		});
 	}
 
-	private static void placeQuitOption() {
-		// Add the quit button
-		Button button_quit = new Button("Quit");
-		button_quit.setMaxWidth(Double.MAX_VALUE);
-		button_quit.setTextFill(Color.RED);
-		buttons.getChildren().add(button_quit);
-
-		// Make the button actually quit the simulation
-		button_quit.setOnAction((event) -> { System.exit(0); });
-	}
-
 	private static void placeButtons() {
 		buttons.setSpacing(10);
 		buttons.setPadding(new Insets(25, 25, 25, 0));
@@ -341,6 +330,10 @@ public class Main extends Application {
 	}
 
 	private static void placeSlider() {
+		// Set the label and tool tip for setting the seed
+		Label label_animation = new Label("Animation Speed: ");
+		userGrid.add(label_animation, 0, 5);
+
 		Slider slider = new Slider();
 		slider.setMin(0);
 		slider.setMax(100);
@@ -350,10 +343,21 @@ public class Main extends Application {
 		slider.setMajorTickUnit(50);
 		slider.setMinorTickCount(5);
 		slider.setBlockIncrement(10);
-		userGrid.add(slider, 0, 5);
-		Button sliderButton = new Button("Animate!");
-		userGrid.add(sliderButton, 1, 6);
-		sliderButton.setOnAction((event) -> { System.out.println(slider.getValue()); });
+		userGrid.add(slider, 1, 5);
+		Button sliderButton = new Button("Run Simulation");
+		sliderButton.setMaxWidth(Double.MAX_VALUE);
+		buttons.getChildren().add(sliderButton);
+	}
+
+	private static void placeQuitOption() {
+		// Add the quit button
+		Button button_quit = new Button("Quit");
+		button_quit.setMaxWidth(Double.MAX_VALUE);
+		button_quit.setTextFill(Color.RED);
+		buttons.getChildren().add(button_quit);
+
+		// Make the button actually quit the simulation
+		button_quit.setOnAction((event) -> { System.exit(0); });
 	}
 
 	private static void setCritterGrid() {
@@ -413,14 +417,15 @@ public class Main extends Application {
 			// place all of the buttons and labels for the user interface
 			placeNumTimeStepsOption();
 			placeAddCrittersOption();
-			placeInvisibleButton();
-			placeInvisibleButton();
-			placeInvisibleButton();
+				placeInvisibleButton();
+				placeInvisibleButton();
+				placeInvisibleButton();
 			placeRunStatsOption();
-			placeInvisibleButton();
+				placeInvisibleButton();
 			placeSeedOption();
-			placeQuitOption();
 			placeSlider();
+				placeInvisibleButton();
+			placeQuitOption();
 			placeButtons();
 
 		    setUserScene();
