@@ -31,11 +31,21 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+
 	// screen width and height factors
-	private final static int screenWidthScalingFactor = 1;
-	private final static int screenHeightScalingFactor = 1;
-	public final static int screenWidth = Params.world_width * screenWidthScalingFactor;
-	public final static int screenHeight = Params.world_height * screenHeightScalingFactor;
+//	private final static int screenWidthScalingFactor = critterBoxSize;
+//	private final static int screenHeightScalingFactor = critterBoxSize;
+	public static int screenWidth = 650;
+	public static int screenHeight = 600;
+
+	// constants used for display
+	private static final int numCrittersPerRow = Params.world_width;
+	private static final int numCrittersPerCol = Params.world_height;
+	public static final int critterBoxSize =
+		(int) Math.sqrt(screenWidth * screenHeight /
+		(numCrittersPerRow * numCrittersPerCol));
+	private static final String myPackage =
+		Critter.class.getPackage().toString().split(" ")[1];
 
 	// grid, stage, scene for the critters
 	static GridPane layer_critterWorld = new GridPane();
@@ -54,12 +64,10 @@ public class Main extends Application {
 	// stack containing the layers for the critter world
 	static Group critterWorldStack = new Group();
 
-	// constants used for display
-	private static final int numCrittersPerRow = 2;
-	public static final int critterBoxSize =
-		(int) Math.sqrt(Params.world_height * Params.world_width /
-						(numCrittersPerRow * numCrittersPerRow));
-	private static final String myPackage = Critter.class.getPackage().toString().split(" ")[1];
+//	private static void adjustScreen() {
+//		while (screenWidth < 600) { screenWidth += 10; }
+//		while (screenHeight < 600) { screenHeight += 10; }
+//	}
 
 	private static String getExtension(File file) {
 		String fileName = file.getName();
@@ -132,6 +140,7 @@ public class Main extends Application {
 			    int numSteps = Integer.parseInt(textField_numTimeSteps.getText());
 			    if (numSteps < 0) { throw new NumberFormatException(); }
 			    for(int i = 0; i < numSteps; i++){ Critter.worldTimeStep(); }
+			    Critter.displayWorld();
             } catch(Exception e){
             	String msg = "Please enter a positive integer greater than or equal to zero.";
             	showErrorMessage(msg, 600, 100);
@@ -241,15 +250,15 @@ public class Main extends Application {
 		});
 	}
 
-	private static void addGridLines() {
+	public static void addGridLines() {
 		for (int i = 0; i < 2000; i += critterBoxSize) {
-			if (i <= Params.world_width) {
-			    Line line_vertical = new Line(i, 0, i, Params.world_height);
+			if (i <= screenWidth  &&  i <= screenHeight) {
+			    Line line_vertical = new Line(i, 0, i, Math.min(screenHeight, screenWidth));
 			    line_vertical.setStroke(Color.LIGHTGREY);
 			    critterWorldStack.getChildren().add(line_vertical);
 			}
-		    if (i <= Params.world_height) {
-		    	Line line_horizontal = new Line(0, i, Params.world_width, i);
+		    if (i <= screenHeight  &&  i <= screenWidth) {
+		    	Line line_horizontal = new Line(0, i, Math.min(screenWidth, screenHeight), i);
 		    	line_horizontal.setStroke(Color.LIGHTGREY);
 			    critterWorldStack.getChildren().add(line_horizontal);
 		    }
@@ -312,7 +321,7 @@ public class Main extends Application {
 		userScene = new Scene(hbox, screenWidth, screenHeight);
 	}
 
-	private static void setCritterScene() {
+	public static void setCritterScene() {
 		critterScene = new Scene(critterWorldStack, screenWidth, screenHeight);
 	}
 
@@ -324,8 +333,10 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			// set the stage and grid options
-			setCritterStage(); setCritterGrid(); addGridLines();
+			setCritterStage(); setCritterGrid();
 			setUserStage(); setUserGrid();
+			addGridLines();
+//			adjustScreen();
 
 			// toggle these debug options to see grid lines
 //			layer_critterWorld.setGridLinesVisible(true);
