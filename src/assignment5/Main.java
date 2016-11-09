@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import assignment5.Critter;
+//import assignment5.Timing.RemindTask;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -50,6 +51,7 @@ public class Main extends Application {
 		(numCrittersPerRow * numCrittersPerCol));
 	private static final String myPackage =
 		Critter.class.getPackage().toString().split(" ")[1];
+	private static int animationSpeed = 0;
 
 	// grid, stage, scene for the critters
 	static GridPane layer_critterWorld = new GridPane();
@@ -332,7 +334,42 @@ public class Main extends Application {
 		buttonsGrid.add(buttons, 0, 0);
 	}
 
-	private static void placeSlider() {
+	static boolean doneDelaying = false;
+
+	public class Timing {
+	    Timer timer;
+
+	    public Timing() {
+	        timer = new Timer();
+	        timer.schedule(
+	        	new TimerDelay(),
+		        0,        //initial delay
+		        1*1000);  //subsequent rate
+	    }
+
+	    class TimerDelay extends TimerTask {
+	    	int numSecsOfDelay = 3;
+
+	        @Override
+			public void run() {
+//	        	for (int i = 0; i < animationSpeed; ++i) {
+//	        		Critter.worldTimeStep();
+//	        	}
+//	        	try {
+//					Thread.sleep(5000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//	        	Critter.displayWorld();
+//	        	timer.cancel();
+//	        	if (numSecsOfDelay > 0) { numSecsOfDelay--; System.out.println(numSecsOfDelay); }
+//	        	else { doneDelaying = true; System.out.println("timer finsihed"); timer.cancel(); }
+	        }
+	    }
+	}
+
+	private void placeSlider() {
 		// Set the label and tool tip for setting the seed
 		Label label_animation = new Label("Animation Speed: ");
 		userGrid.add(label_animation, 0, 5);
@@ -347,30 +384,44 @@ public class Main extends Application {
 		slider.setMinorTickCount(5);
 		slider.setBlockIncrement(10);
 		userGrid.add(slider, 1, 5);
+
 		Button sliderButton = new Button("Run Simulation");
 		sliderButton.setMaxWidth(Double.MAX_VALUE);
 		buttons.getChildren().add(sliderButton);
 		Button stopButton = new Button("Stop Simulation");
 		stopButton.setMaxWidth(Double.MAX_VALUE);
 		buttons.getChildren().add(stopButton);
-		BooleanProperty stopped = new SimpleBooleanProperty();
-		stopped.set(false);
-		sliderButton.setOnAction((event) -> { 
-			int speed = (int) slider.getValue();
-			for(Node b: buttons.getChildren()){
-				b.setDisable(true);
-			}
+
+		sliderButton.setOnAction((event) -> {
+			animationSpeed = (int) slider.getValue();
+			for(Node b: buttons.getChildren()){  b.setDisable(true);  }
 			stopButton.setDisable(false);
-		//	while(!stopped.get()){			//TODO: make this not freeze!!!!
-				
-				for(int i = 0; i < speed; i++){ Critter.worldTimeStep(); }
-			    Critter.displayWorld();
-			    stopButton.setOnAction((event2) -> { 
-					stopped.set(true);
-				});
-			    //TODO: do some runStats stuff lol
-			//}
-		});
+
+			stopButton.setOnAction((event2) -> {
+//				System.out.println("stopped");
+				for(Node b: buttons.getChildren()){  b.setDisable(false);  }
+			}); // end event 2 (stop button)
+
+//			new Timing();
+
+//			for (int j = 0; j < 4; ++j) {
+//				System.out.println("world time steps");
+				for(int i = 0; i < animationSpeed; i++){ Critter.worldTimeStep(); }
+				Critter.displayWorld();
+				while (! doneDelaying) {}
+				//TODO: do some runStats stuff lol
+//				new Timing(); // timer delay
+//				try {
+//					Thread.sleep(5000);
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				for(int i = 0; i < animationSpeed; i++){ Critter.worldTimeStep(); }
+				Critter.displayWorld();
+//				while (! doneDelaying) {}
+//			}
+		}); // end event 1 (start button)
 	}
 
 	private static void placeQuitOption() {
@@ -436,7 +487,7 @@ public class Main extends Application {
 
 			// toggle these debug options to see grid lines
 //			layer_critterWorld.setGridLinesVisible(true);
-			userGrid.setGridLinesVisible(true);
+//			userGrid.setGridLinesVisible(true);
 
 			// place all of the buttons and labels for the user interface
 			placeNumTimeStepsOption();
@@ -455,6 +506,7 @@ public class Main extends Application {
 		    setUserScene();
 		    setCritterScene();
 			Critter.displayWorld();
+			Critter.displayUserWorld();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

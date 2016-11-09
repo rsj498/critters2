@@ -724,6 +724,11 @@ public abstract class Critter {
         resetFlags();
     }
 
+    public static void displayUserWorld() {
+    	Main.userStage.setScene(Main.userScene);
+		Main.userStage.show();
+    }
+
     /**
      * Display the critter world grid and user interface.
      */
@@ -736,7 +741,7 @@ public abstract class Critter {
 		Main.critterStage.setScene(Main.critterScene);
 		Main.critterStage.show();
 
-		Main.userStage.setScene(Main.userScene);
-		Main.userStage.show();
+//		Main.doneDelaying = true;
+//		System.out.flush();
     }
 }
