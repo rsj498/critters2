@@ -361,13 +361,14 @@ public class Main extends Application {
 				b.setDisable(true);
 			}
 			stopButton.setDisable(false);
-		//	while(!stopped.get()){			
+		//	while(!stopped.get()){			//TODO: make this not freeze!!!!
 				
 				for(int i = 0; i < speed; i++){ Critter.worldTimeStep(); }
 			    Critter.displayWorld();
 			    stopButton.setOnAction((event2) -> { 
 					stopped.set(true);
 				});
+			    //TODO: do some runStats stuff lol
 			//}
 		});
 	}
