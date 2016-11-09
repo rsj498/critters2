@@ -32,6 +32,7 @@ public class Critter2 extends Critter {
 
 	@Override
 	public boolean fight(String opponent) {
+		look(0,true);
 		return false; // Moms don't like to fight their babies
 	}
 	

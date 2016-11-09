@@ -24,6 +24,7 @@ public class Critter1 extends Critter {
 
 	@Override
 	public void doTimeStep() {
+		look(0, true);
 		run(0);
 	}
 

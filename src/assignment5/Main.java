@@ -126,27 +126,6 @@ public class Main extends Application {
         dialog.show();
 	}
 
-	private static VBox makeStatsMessage(String msg) {
-		VBox dialogVbox = new VBox(30);
-        dialogVbox.setAlignment(Pos.CENTER);
-        Text statsMessage = new Text(msg);
-        statsMessage.setFill(Color.BLACK);
-        statsMessage.setFont(
-        	Font.font(Font.getDefault().toString(), 15));
-        dialogVbox.getChildren().add(statsMessage);
-        return dialogVbox;
-	}
-
-	private static void showStatsMessage(String cls, String msg, int boxSizeX, int boxSizeY) {
-		final Stage dialog = new Stage();
-        dialog.initModality(Modality.NONE);
-        dialog.initOwner(userStage);
-        VBox dialogVbox = makeStatsMessage(msg);
-        Scene dialogScene = new Scene(dialogVbox, boxSizeX, boxSizeY);
-        dialog.setScene(dialogScene);
-        dialog.setTitle(cls + " Stats");
-        dialog.show();
-	}
 
 	private static void placeNumTimeStepsOption() {
 		// Set the label and tool tip for executing time steps
@@ -255,7 +234,10 @@ public class Main extends Application {
 		Button button_runStats = new Button("Run Stats");
 		button_runStats.setMaxWidth(Double.MAX_VALUE);
 		buttons.getChildren().add(button_runStats);
-
+		Label l = new Label("");
+		Label statsLabel = new Label("Run Stats:");
+		userGrid.add(statsLabel, 0, 7);
+		userGrid.add(l, 1, 7);
 		// Make the button actually run stats
 		button_runStats.setOnAction((event) -> {
 			try{
@@ -271,7 +253,9 @@ public class Main extends Application {
                 Class<?> cls = Class.forName(fullClassName);
                 Method runStats = cls.getMethod("runStats", List.class);
                 String str = (String) runStats.invoke(cls, critterList);
-                showStatsMessage(className, str, 600, 100);
+                l.setText(str);
+                
+              
             } catch(Exception e){
         		String msg = "Please choose one or more of the available critters.";
             	showErrorMessage(msg, 600, 100);
