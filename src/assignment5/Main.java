@@ -7,8 +7,7 @@ import java.util.*;
 import assignment5.Critter;
 //import assignment5.Timing.RemindTask;
 import javafx.application.Application;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -38,30 +37,30 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
 	// screen width and height factors
-//	private final static int screenWidthScalingFactor = critterBoxSize;
-//	private final static int screenHeightScalingFactor = critterBoxSize;
-	public static int screenWidth = 660;
-	public static int screenHeight = 660;
+	public static int userScreenWidth = 520;
+	public static int userScreenHeight = 420;
+	public static int critterScreenWidth = 660;
+	public static int critterScreenHeight = 660;
 
 	// constants used for display
-	private static final int numCrittersPerRow = Params.world_width;
-	private static final int numCrittersPerCol = Params.world_height;
-	public static final int critterBoxSize =
-		(int) Math.sqrt(screenWidth * screenHeight /
+	private static int numCrittersPerRow = Params.world_width;
+	private static int numCrittersPerCol = Params.world_height;
+	public static int critterBoxSize =
+		(int) Math.sqrt(critterScreenWidth * critterScreenHeight /
 		(numCrittersPerRow * numCrittersPerCol));
 	private static final String myPackage =
 		Critter.class.getPackage().toString().split(" ")[1];
-	private static int animationSpeed = 0;
 
 	// grid, stage, scene for the critters
 	static GridPane layer_critterWorld = new GridPane();
 	static Stage critterStage = new Stage();
-	static Scene critterScene = new Scene(layer_critterWorld, screenWidth, screenHeight);
+	static Scene critterScene
+		= new Scene(layer_critterWorld, critterScreenWidth, critterScreenHeight);
 
 	// grid, stage, scene for the user
 	static GridPane userGrid = new GridPane();
 	static Stage userStage = new Stage();
-	static Scene userScene = new Scene(userGrid, screenWidth, screenHeight);
+	static Scene userScene = new Scene(userGrid, userScreenWidth, userScreenHeight);
 
 	// vertical box, grid for the buttons
 	static VBox buttons = new VBox();
@@ -69,6 +68,9 @@ public class Main extends Application {
 
 	// stack containing the layers for the critter world
 	static Group critterWorldStack = new Group();
+
+	// animation slider
+    private static Slider slider = new Slider();
 
 //	private static void adjustScreen() {
 //		while (screenWidth < 600) { screenWidth += 10; }
@@ -222,8 +224,8 @@ public class Main extends Application {
 		ListView<String> list_runStats = new ListView<String>();
 		list_runStats.setItems(FXCollections.observableList(validCritterTypes));
 		list_runStats.setTooltip(new Tooltip(
-				"Type of critters to view stats on.\n"
-				+ "You can select more than one option by holding the 'ctrl' button"));
+				"Type of critters to view stats on.\n"));
+//				+ "You can select more than one option by holding the 'ctrl' button"));
 		userGrid.add(list_runStats, 1, 3);
 
 		// Configure settings for the list
@@ -256,8 +258,8 @@ public class Main extends Application {
                 Method runStats = cls.getMethod("runStats", List.class);
                 String str = (String) runStats.invoke(cls, critterList);
                 l.setText(str);
-                
-              
+
+
             } catch(Exception e){
         		String msg = "Please choose one or more of the available critters.";
             	showErrorMessage(msg, 600, 100);
@@ -267,16 +269,16 @@ public class Main extends Application {
 
 	public static void addGridLines() {
 		for (int i = 0; i < 2000; i += critterBoxSize) {
-			int lineLength = Math.min(screenHeight, screenWidth);
+			int lineLength = Math.min(critterScreenHeight, critterScreenWidth);
 			lineLength = lineLength / critterBoxSize * critterBoxSize;
 //			lineLength = (int) ((Math.ceil(lineLength / critterBoxSize) + 1) * critterBoxSize);
 
-			if (i <= screenWidth  &&  i <= screenHeight) {
+			if (i <= critterScreenWidth  &&  i <= critterScreenHeight) {
 			    Line line_vertical = new Line(i, 0, i, lineLength);
 			    line_vertical.setStroke(Color.LIGHTGREY);
 			    critterWorldStack.getChildren().add(line_vertical);
 			}
-		    if (i <= screenHeight  &&  i <= screenWidth) {
+		    if (i <= critterScreenHeight  &&  i <= critterScreenWidth) {
 		    	Line line_horizontal = new Line(0, i, lineLength, i);
 		    	line_horizontal.setStroke(Color.LIGHTGREY);
 			    critterWorldStack.getChildren().add(line_horizontal);
@@ -320,45 +322,40 @@ public class Main extends Application {
 
 	static boolean doneDelaying = false;
 
-	public class Timing {
-	    Timer timer;
+	private static Timer timer = new Timer();
+    public void animation() {
+    	timer = new Timer();
+    	timer.scheduleAtFixedRate(new TimerTask() {
+    		@Override
+    		public void run() {
+    			Platform.runLater(new Runnable() {
+    				@Override
+					public void run() {
+    					try {
+    						Critter.worldTimeStep();
+//    						StatsOutput.clear();
+//    						Method m = Class.forName(myPackage+"."+dropStats.getValue()).getMethod("runStats", List.class);
+//    	            		m.invoke(null, Critter.getInstances(dropStats.getValue()));
+    						Critter.displayWorld();
+    					} catch (Exception e1) {
 
-	    public Timing() {
-	        timer = new Timer();
-	        timer.schedule(
-	        	new TimerDelay(),
-		        0,        //initial delay
-		        1*1000);  //subsequent rate
-	    }
+    					}
+    				}
+    			});
 
-	    class TimerDelay extends TimerTask {
-	    	int numSecsOfDelay = 3;
+    			try { Thread.sleep(1); }
+    			catch (InterruptedException e) {}
+    		}
+    	}, (long)(5000/(slider.getValue())),(long)(5000/(slider.getValue())));
+    }
 
-	        @Override
-			public void run() {
-//	        	for (int i = 0; i < animationSpeed; ++i) {
-//	        		Critter.worldTimeStep();
-//	        	}
-//	        	try {
-//					Thread.sleep(5000);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//	        	Critter.displayWorld();
-//	        	timer.cancel();
-//	        	if (numSecsOfDelay > 0) { numSecsOfDelay--; System.out.println(numSecsOfDelay); }
-//	        	else { doneDelaying = true; System.out.println("timer finsihed"); timer.cancel(); }
-	        }
-	    }
-	}
+    private static boolean animationIsRunning = false;
 
 	private void placeSlider() {
 		// Set the label and tool tip for setting the seed
 		Label label_animation = new Label("Animation Speed: ");
 		userGrid.add(label_animation, 0, 5);
 
-		Slider slider = new Slider();
 		slider.setMin(0);
 		slider.setMax(100);
 		slider.setValue(40);
@@ -376,36 +373,32 @@ public class Main extends Application {
 		stopButton.setMaxWidth(Double.MAX_VALUE);
 		buttons.getChildren().add(stopButton);
 
+		slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+			 if(animationIsRunning){
+				 try{
+					 timer.cancel();
+					 animation();
+				 } catch (Exception e1) {
+
+				 }
+			 }
+		 });
+
 		sliderButton.setOnAction((event) -> {
-			animationSpeed = (int) slider.getValue();
-			for(Node b: buttons.getChildren()){  b.setDisable(true);  }
+			// disable buttons and get slider value
+			for(Node b: buttons.getChildren()){ b.setDisable(true); }
 			stopButton.setDisable(false);
 
+			// do the animation
+			animationIsRunning = true;
+			animation();
+
+			// re-enable the buttons and cancel animation once stop is pressed
 			stopButton.setOnAction((event2) -> {
-//				System.out.println("stopped");
-				for(Node b: buttons.getChildren()){  b.setDisable(false);  }
-			}); // end event 2 (stop button)
-
-//			new Timing();
-
-//			for (int j = 0; j < 4; ++j) {
-//				System.out.println("world time steps");
-				for(int i = 0; i < animationSpeed; i++){ Critter.worldTimeStep(); }
-				Critter.displayWorld();
-				while (! doneDelaying) {}
-				//TODO: do some runStats stuff lol
-//				new Timing(); // timer delay
-//				try {
-//					Thread.sleep(5000);
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-				for(int i = 0; i < animationSpeed; i++){ Critter.worldTimeStep(); }
-				Critter.displayWorld();
-//				while (! doneDelaying) {}
-//			}
-		}); // end event 1 (start button)
+				for(Node b: buttons.getChildren()){  b.setDisable(false); }
+				timer.cancel();
+			});
+		});
 	}
 
 	private static void placeQuitOption() {
@@ -427,6 +420,19 @@ public class Main extends Application {
 		layer_critterWorld.setStyle("-fx-background-color: #FFFFFF;");
 	}
 
+	private static void setCritterStage() {
+		critterStage.setTitle("Critter World");
+		critterStage.setX(700); // TODO: generalize this for every computer screen
+		critterStage.setY(0);   // TODO: generalize this for every computer screen
+		critterStage.setMinHeight(critterScreenHeight + 40);
+		critterStage.setMinWidth(critterScreenWidth + 20);
+	}
+
+	public static void setCritterScene() {
+		critterScene =
+			new Scene(critterWorldStack, critterScreenWidth, critterScreenHeight);
+	}
+
 	private static void setUserGrid() {
     	userGrid.setAlignment(Pos.TOP_LEFT);
 		userGrid.setHgap(10);
@@ -434,27 +440,19 @@ public class Main extends Application {
 		userGrid.setPadding(new Insets(25, 10, 25, 25));
 	}
 
-	private static void setCritterStage() {
-		critterStage.setTitle("Critter World");
-		critterStage.setX(700); // TODO: generalize this for every computer screen
-		critterStage.setY(0);   // TODO: generalize this for every computer screen
-	}
-
 	private static void setUserStage() {
 		userStage.setTitle("User Interface");
 		userStage.setX(-10);// TODO: generalize this for every computer screen
 		userStage.setY(0);// TODO: generalize this for every computer screen
+		userStage.setMinHeight(userScreenHeight);
+		userStage.setMinWidth(userScreenWidth);
 	}
 
 	private static void setUserScene() {
 		// put the buttons and user grid into a box
 		HBox hbox = new HBox();
 		hbox.getChildren().addAll(userGrid, buttonsGrid);
-		userScene = new Scene(hbox, screenWidth, screenHeight);
-	}
-
-	public static void setCritterScene() {
-		critterScene = new Scene(critterWorldStack, screenWidth, screenHeight);
+		userScene = new Scene(hbox, userScreenWidth, userScreenHeight);
 	}
 
 	// TODO: idk how scaling grid sizes for different computers works
