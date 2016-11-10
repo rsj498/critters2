@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javafx.scene.Group;
-import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -44,7 +43,7 @@ public abstract class Critter {
 	// ==========================================================================
 	// ==========================================================================
 
-	public static final int critterSize = (int) (Main.critterBoxSize * 0.6);
+	public static int critterSize = (int) (Main.critterBoxSize * 0.6);
 	private static String myPackage;
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
@@ -90,82 +89,10 @@ public abstract class Critter {
 		}
 	}
 
+	public static int placementAdjustment = 0;
+
 	protected final void paint(Group g) {
 		Shape s = new Polygon();
-		double[] circleCoordinates = new double[] {
-			(critterSize/2) * Math.cos(90),   (critterSize/2) * Math.sin(90),
-			(critterSize/2) * Math.cos(85),   (critterSize/2) * Math.sin(85),
-			(critterSize/2) * Math.cos(80),   (critterSize/2) * Math.sin(80),
-			(critterSize/2) * Math.cos(75),   (critterSize/2) * Math.sin(75),
-			(critterSize/2) * Math.cos(70),   (critterSize/2) * Math.sin(70),
-			(critterSize/2) * Math.cos(65),   (critterSize/2) * Math.sin(65),
-			(critterSize/2) * Math.cos(60),   (critterSize/2) * Math.sin(60),
-			(critterSize/2) * Math.cos(55),   (critterSize/2) * Math.sin(55),
-			(critterSize/2) * Math.cos(50),   (critterSize/2) * Math.sin(50),
-			(critterSize/2) * Math.cos(45),   (critterSize/2) * Math.sin(45),
-			(critterSize/2) * Math.cos(40),   (critterSize/2) * Math.sin(40),
-			(critterSize/2) * Math.cos(35),   (critterSize/2) * Math.sin(35),
-			(critterSize/2) * Math.cos(30),   (critterSize/2) * Math.sin(30),
-			(critterSize/2) * Math.cos(25),   (critterSize/2) * Math.sin(25),
-			(critterSize/2) * Math.cos(20),   (critterSize/2) * Math.sin(20),
-			(critterSize/2) * Math.cos(15),   (critterSize/2) * Math.sin(15),
-			(critterSize/2) * Math.cos(10),   (critterSize/2) * Math.sin(10),
-			(critterSize/2) * Math.cos(5),    (critterSize/2) * Math.sin(5),
-			(critterSize/2) * Math.cos(0),    (critterSize/2) * Math.sin(0),
-			(critterSize/2) * Math.cos(355),  (critterSize/2) * Math.sin(355),
-			(critterSize/2) * Math.cos(350),  (critterSize/2) * Math.sin(350),
-			(critterSize/2) * Math.cos(345),  (critterSize/2) * Math.sin(345),
-			(critterSize/2) * Math.cos(340),  (critterSize/2) * Math.sin(340),
-			(critterSize/2) * Math.cos(335),  (critterSize/2) * Math.sin(335),
-			(critterSize/2) * Math.cos(330),  (critterSize/2) * Math.sin(330),
-			(critterSize/2) * Math.cos(325),  (critterSize/2) * Math.sin(325),
-			(critterSize/2) * Math.cos(320),  (critterSize/2) * Math.sin(320),
-			(critterSize/2) * Math.cos(315),  (critterSize/2) * Math.sin(315),
-			(critterSize/2) * Math.cos(310),  (critterSize/2) * Math.sin(310),
-			(critterSize/2) * Math.cos(305),  (critterSize/2) * Math.sin(305),
-			(critterSize/2) * Math.cos(300),  (critterSize/2) * Math.sin(300),
-			(critterSize/2) * Math.cos(295),  (critterSize/2) * Math.sin(295),
-			(critterSize/2) * Math.cos(290),  (critterSize/2) * Math.sin(290),
-			(critterSize/2) * Math.cos(285),  (critterSize/2) * Math.sin(285),
-			(critterSize/2) * Math.cos(280),  (critterSize/2) * Math.sin(280),
-			(critterSize/2) * Math.cos(275),  (critterSize/2) * Math.sin(275),
-			(critterSize/2) * Math.cos(270),  (critterSize/2) * Math.sin(270),
-			(critterSize/2) * Math.cos(265),  (critterSize/2) * Math.sin(265),
-			(critterSize/2) * Math.cos(260),  (critterSize/2) * Math.sin(260),
-			(critterSize/2) * Math.cos(255),  (critterSize/2) * Math.sin(255),
-			(critterSize/2) * Math.cos(250),  (critterSize/2) * Math.sin(250),
-			(critterSize/2) * Math.cos(245),  (critterSize/2) * Math.sin(245),
-			(critterSize/2) * Math.cos(240),  (critterSize/2) * Math.sin(240),
-			(critterSize/2) * Math.cos(235),  (critterSize/2) * Math.sin(235),
-			(critterSize/2) * Math.cos(230),  (critterSize/2) * Math.sin(230),
-			(critterSize/2) * Math.cos(225),  (critterSize/2) * Math.sin(225),
-			(critterSize/2) * Math.cos(220),  (critterSize/2) * Math.sin(220),
-			(critterSize/2) * Math.cos(215),  (critterSize/2) * Math.sin(215),
-			(critterSize/2) * Math.cos(210),  (critterSize/2) * Math.sin(210),
-			(critterSize/2) * Math.cos(205),  (critterSize/2) * Math.sin(205),
-			(critterSize/2) * Math.cos(200),  (critterSize/2) * Math.sin(200),
-			(critterSize/2) * Math.cos(195),  (critterSize/2) * Math.sin(195),
-			(critterSize/2) * Math.cos(190),  (critterSize/2) * Math.sin(190),
-			(critterSize/2) * Math.cos(185),  (critterSize/2) * Math.sin(185),
-			(critterSize/2) * Math.cos(180),  (critterSize/2) * Math.sin(180),
-			(critterSize/2) * Math.cos(175),  (critterSize/2) * Math.sin(175),
-			(critterSize/2) * Math.cos(170),  (critterSize/2) * Math.sin(170),
-			(critterSize/2) * Math.cos(165),  (critterSize/2) * Math.sin(165),
-			(critterSize/2) * Math.cos(160),  (critterSize/2) * Math.sin(160),
-			(critterSize/2) * Math.cos(155),  (critterSize/2) * Math.sin(155),
-			(critterSize/2) * Math.cos(150),  (critterSize/2) * Math.sin(150),
-			(critterSize/2) * Math.cos(145),  (critterSize/2) * Math.sin(145),
-			(critterSize/2) * Math.cos(140),  (critterSize/2) * Math.sin(140),
-			(critterSize/2) * Math.cos(135),  (critterSize/2) * Math.sin(135),
-			(critterSize/2) * Math.cos(130),  (critterSize/2) * Math.sin(130),
-			(critterSize/2) * Math.cos(125),  (critterSize/2) * Math.sin(125),
-			(critterSize/2) * Math.cos(120),  (critterSize/2) * Math.sin(120),
-			(critterSize/2) * Math.cos(115),  (critterSize/2) * Math.sin(115),
-			(critterSize/2) * Math.cos(110),  (critterSize/2) * Math.sin(110),
-			(critterSize/2) * Math.cos(105),  (critterSize/2) * Math.sin(105),
-			(critterSize/2) * Math.cos(100),  (critterSize/2) * Math.sin(100),
-			(critterSize/2) * Math.cos(95),   (critterSize/2) * Math.sin(95)
-		};
 
 		double[] squareCoordinates = new double[] {
             0,             0,
@@ -209,7 +136,7 @@ public abstract class Critter {
 		s.setStroke(viewOutlineColor());
 
 		// adjust the critter to the middle of the box
-		int placementAdjustment = ((Main.critterBoxSize - critterSize) / 2);
+		placementAdjustment = ((Main.critterBoxSize - critterSize) / 2);
 
 		// do some math to find the correct box for the critter
 //		double boxNumX = Math.floor(x_coord / Main.critterBoxSize);
