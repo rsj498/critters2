@@ -26,7 +26,7 @@ public class Critter2 extends Critter {
 	public void doTimeStep() {
 		while (getEnergy() >= Params.min_reproduce_energy) {
 			Craig child = new Craig();
-			reproduce(child, Critter.getRandomInt(8));
+//			reproduce(child, Critter.getRandomInt(8));
 		}
 	}
 
@@ -35,7 +35,8 @@ public class Critter2 extends Critter {
 		look(0,true);
 		return false; // Moms don't like to fight their babies
 	}
-	
+
+	@Override
 	public String toString() {
 		return "2";
 	}

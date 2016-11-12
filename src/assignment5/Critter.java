@@ -63,9 +63,6 @@ public abstract class Critter {
 		myPackage = Critter.class.getPackage().toString().split(" ")[1];
 	}
 
-	// TODO: when to remove dead critters (see pdf)
-
-	// TODO: test look()
 	protected String look(int direction, boolean steps) {
 		energy -= Params.look_energy_cost;
         if (energy <= 0) { critterCount[y_coord][x_coord] -= 1; }
@@ -81,7 +78,7 @@ public abstract class Critter {
 						return c.toString();
 					}
 				}
-				System.err.println("Look went wrong. OHNOOOESSSS");
+//				System.err.println("Look went wrong. OHNOOOESSSS");
 				return ""; // TODO: remove me
 			}
 		} else {
